@@ -16,22 +16,31 @@ class Polynome:
     def putPolyDegree(self):
         print("Polynome de degrée : " + str(self.monomes[0].power))
         return self.monomes[0].power
-    
+    def findMonomeWithPowerOf(self, power):
+        for el in self.monomes:
+            if el.power == power:
+                return el
+        else :
+            return None
 
 poly = Polynome()
 
 
-def createMonome(tab):
+def createMonome(tab, right):
     monome = None
+    val = -int(tab[0].replace("=", "")) if right else int(tab[0].replace("=", ""))
     if len(tab) == 1:
-        monome = Monome(int(tab[0]), 0)
+        monome = Monome(val, 0)
     else :
-        val = int(tab[0])
         pow = int(tab[1].split("^")[1])
         monome = Monome(val,pow)
-    poly.monomes.append(monome)
+    ref = poly.findMonomeWithPowerOf(monome.power) 
+    if ref != None:
+        ref.value += monome.value
+    else :
+        poly.monomes.append(monome)
 
-def getPower(str):
+def getPower(str, right):
     str = str.replace(" ", "")
     str = str.replace('-x', '-1*x')
     if str.startswith('x'):
@@ -39,15 +48,18 @@ def getPower(str):
     if str.endswith('x'):
         str = str.replace('x', 'x^1')
     print(str)
-    createMonome(str.split("*"))
+    createMonome(str.split("*"), right)
     return str
 
 def getInput():
+    right = 0
     val = input("Entrez une équation: ")
     expr = val.replace("-", "+-").split("+")
     print(expr)
     for ex in expr:
-        getPower(ex)
+        if ex.find("=") > 0:
+            right = 1
+        getPower(ex, right)
 
 
 getInput()
