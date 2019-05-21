@@ -12,6 +12,11 @@ def end(reason):
     print(reason)
     exit()
 
+def onclick(event):
+    print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+          ('double' if event.dblclick else 'single', event.button,
+           event.x, event.y, event.xdata, event.ydata))
+
 class Polynome:
     a = 0
     b = 0
@@ -21,8 +26,10 @@ class Polynome:
     string = ""
 
     def draw(self):
-        x = np.linspace(-20,20,400)
+        x = np.linspace(-20,20,200)
         y = self.c + self.b*x + self.a*x*x
+        fig = plt.figure()
+        fig.canvas.mpl_connect('button_press_event', onclick)
         plt.plot(x,y)
         plt.show()
 
@@ -141,6 +148,8 @@ def getInput():
     except EOFError as error:
         end("Erreur input.")
     except KeyboardInterrupt as error:
+        end("Erreur input.")
+    except IOError as error:
         end("Erreur input.")
     checkInput(val)
     expr = val.lower().replace("-", "+-").split("+")
