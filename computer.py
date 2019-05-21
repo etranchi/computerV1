@@ -7,6 +7,11 @@ class Monome:
         self.value = v
         self.power = p
 
+
+def end(reason):
+    print(reason)
+    exit()
+
 class Polynome:
     a = 0
     b = 0
@@ -38,20 +43,16 @@ class Polynome:
             return None
 
     def createABC(self):
-
         self.a = self.findMonomeWithPowerOf(2).value if self.findMonomeWithPowerOf(2) != None else 0
         self.b = self.findMonomeWithPowerOf(1).value if self.findMonomeWithPowerOf(1) != None else 0
         self.c = self.findMonomeWithPowerOf(0).value if self.findMonomeWithPowerOf(0) != None else 0
-        print(self.a, self.b, self.c)
 
     def solve(self):
         self.createABC()
         if self.a == 0 and self.b == 0 and self.c == 0:
-            print("Tous les nombres réels sont solutions.")
-            return
+            end("Tous les nombres réels sont solutions.")
         if self.a == 0 and self.b == 0 and self.c != 0:
-            print("Pas de solutions.")
-            return
+            end("Pas de solutions.")
         discriminant = (self.b * self.b) - (4 * self.a * self.c)
         self.putSolution(discriminant)
     
@@ -73,6 +74,13 @@ poly = Polynome()
 
 
 
+def checkForMonome(mo):
+    if mo.isdigit() == True:
+        return
+    else:
+        if mo.count('^') > 1 or mo.count('*') > 1:
+            end("Erreur parsing.")
+
 def getSignAndValue(val):
     string = ""
     if val < 0:
@@ -89,20 +97,17 @@ def getStringPower(power):
 
 def createMonome(tab, right):
     monome = None
-    print(tab)
+    for v in tab : checkForMonome(v)
     val = -int(tab[0].replace("=", "")) if right else int(tab[0].replace("=", ""))
     if len(tab) == 1:
         monome = Monome(val, 0)
     else :
-        print(tab[1])
         if len(tab[1]) < 3:
-            print("Erreur.")
-            exit()
+            end("Erreur parsing.")
         pow = int(tab[1].split("^")[1])
         monome = Monome(val,pow)
     ref = poly.findMonomeWithPowerOf(monome.power)
     if ref != None:
-        print(ref.value, monome.value)
         ref.value += monome.value
     else :
         poly.monomes.append(monome)
@@ -117,10 +122,24 @@ def getPower(str, right):
     createMonome(str.split("*"), right)
     return str
 
+
+def checkInput(string):
+    for c in string:
+        if c.isdigit() == False and (c != 'x' and c != '+' and c != '-' and c != '*' and c != '=' and c != '^'):
+            end("Erreur parsing.")
+
 def getInput():
     right = 0
-    val = input("Entrez une équation: ")
-    expr = val.replace("-", "+-").split("+")
+    try:
+        val = input("Entrez une équation: ")
+    except EOFError as error:
+        end("Erreur input.")
+    except KeyboardInterrupt as error:
+        end("Erreur input.")
+    if len(val) < 3:
+        end("Erreur input.")
+    checkInput(val)
+    expr = val.lower().replace("-", "+-").split("+")
     for ex in expr:
         if ex.find("=") > 0:
             tmp = ex.split("=")
@@ -136,13 +155,13 @@ getInput()
 poly.sortMonomes()
 poly.sortMonomes()
 if poly.putPolyDegree() > 2 :
-    print("Ne gère pas les puissances supérieures à 2.")
+    end("Ne gère pas les puissances supérieures à 2.")
 
 for mo in poly.monomes:
         poly.string += str(mo.value) if poly.string == "" else getSignAndValue(mo.value)
         poly.string += getStringPower(mo.power)
 
-poly.string += "= 0"
+poly.string += "= 0."
 print("Reduced form : " + poly.string)
 poly.solve()
 poly.draw()
