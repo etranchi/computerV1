@@ -78,7 +78,9 @@ def checkForMonome(mo):
     if mo.isdigit() == True:
         return
     else:
-        if mo.count('^') > 1 or mo.count('*') > 1:
+        if mo[0] == 'x':
+            mo = "1*" + mo
+        if mo.count('^') > 1 or mo.count('*') > 1 or mo.count('^') == 0 or mo.count('*') == 0 :
             end("Erreur parsing.")
 
 def getSignAndValue(val):
@@ -97,11 +99,13 @@ def getStringPower(power):
 
 def createMonome(tab, right):
     monome = None
+    print(tab)
     for v in tab : checkForMonome(v)
     val = -int(tab[0].replace("=", "")) if right else int(tab[0].replace("=", ""))
     if len(tab) == 1:
         monome = Monome(val, 0)
     else :
+        print(tab[1])
         if len(tab[1]) < 3:
             end("Erreur parsing.")
         pow = int(tab[1].split("^")[1])
@@ -124,8 +128,10 @@ def getPower(str, right):
 
 
 def checkInput(string):
+    if string.isdigit():
+        end("Aucune équation a résoudre")
     for c in string:
-        if c.isdigit() == False and (c != 'x' and c != '+' and c != '-' and c != '*' and c != '=' and c != '^'):
+        if c.isdigit() == False and (c != 'x' and c != '+' and c != '-' and c != '*' and c != '=' and c != '^' and c != 'X' and c != ' '):
             end("Erreur parsing.")
 
 def getInput():
@@ -135,8 +141,6 @@ def getInput():
     except EOFError as error:
         end("Erreur input.")
     except KeyboardInterrupt as error:
-        end("Erreur input.")
-    if len(val) < 3:
         end("Erreur input.")
     checkInput(val)
     expr = val.lower().replace("-", "+-").split("+")
@@ -153,7 +157,6 @@ def getInput():
 
 getInput()
 poly.sortMonomes()
-poly.sortMonomes()
 if poly.putPolyDegree() > 2 :
     end("Ne gère pas les puissances supérieures à 2.")
 
@@ -162,6 +165,6 @@ for mo in poly.monomes:
         poly.string += getStringPower(mo.power)
 
 poly.string += "= 0."
-print("Reduced form : " + poly.string)
+print("Forme réduite : " + poly.string)
 poly.solve()
 poly.draw()
