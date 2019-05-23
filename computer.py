@@ -1,5 +1,6 @@
+#!/usr/bin/python3
 
-import numpy as np
+import numpy
 import matplotlib.pyplot as plt
 
 class Monome:
@@ -26,7 +27,7 @@ class Polynome:
     string = ""
 
     def draw(self):
-        x = np.linspace(-20,20,200)
+        x = numpy.linspace(-20,20,200)
         y = self.c + self.b*x + self.a*x*x
         fig = plt.figure()
         fig.canvas.mpl_connect('button_press_event', onclick)
