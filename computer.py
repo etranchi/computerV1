@@ -13,10 +13,9 @@ def end(reason):
     print(reason)
     exit()
 
-def onclick(event):
-    print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
-          ('double' if event.dblclick else 'single', event.button,
-           event.x, event.y, event.xdata, event.ydata))
+def onclick(self):
+    print(self)
+    
 
 class Polynome:
     a = 0
@@ -152,6 +151,8 @@ def getInput():
         end("Erreur input.")
     except IOError as error:
         end("Erreur input.")
+    except:
+        end("Erreur.")
     checkInput(val)
     expr = val.lower().replace("-", "+-").split("+")
     for ex in expr:
@@ -164,8 +165,12 @@ def getInput():
         else :
             getPower(ex, right)
 
-
-getInput()
+try:
+    getInput()
+except EOFError:
+    end("Erreur input")
+except KeyboardInterrupt as error:
+    end("Erreur input.")
 poly.sortMonomes()
 if poly.putPolyDegree() > 2 :
     end("Ne gère pas les puissances supérieures à 2.")
@@ -177,4 +182,7 @@ for mo in poly.monomes:
 poly.string += "= 0."
 print("Forme réduite : " + poly.string)
 poly.solve()
-poly.draw()
+try:
+    poly.draw()
+except :
+    end("Erreur draw")
