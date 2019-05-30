@@ -1,6 +1,7 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
+# coding: utf-8
 
-import numpy
+import numpy as np
 import matplotlib.pyplot as plt
 
 class Monome:
@@ -13,9 +14,10 @@ def end(reason):
     print(reason)
     exit()
 
-def onclick(self):
-    print(self)
-    
+def onclick(event):
+    print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+          ('double' if event.dblclick else 'single', event.button,
+           event.x, event.y, event.xdata, event.ydata))
 
 class Polynome:
     a = 0
@@ -26,7 +28,7 @@ class Polynome:
     string = ""
 
     def draw(self):
-        x = numpy.linspace(-20,20,200)
+        x = np.linspace(-20,20,200)
         y = self.c + self.b*x + self.a*x*x
         fig = plt.figure()
         fig.canvas.mpl_connect('button_press_event', onclick)
@@ -64,18 +66,22 @@ class Polynome:
         self.putSolution(discriminant)
     
     def putSolution(self, val):
+        print("Forme réduite : " + poly.string)
         if self.power == 1:
-            print(self.a, self.b, self.c)
             print("Une solution, x = " + str(-self.c / self.b))
         elif val < 0:
+            print("Discriminant : \u0394 = b^2 - 4*a*c = " + str(val))
             print("Discriminant strictement négatif.")
-            print("Don't handle imaginary right now.")
+            print("Deux solutions imaginaire, x1 = (-b - " + u"\u221a\u0394*i^2) / 2*a, x2 = (-b + " + u"\u221a\u0394*i^2) / 2*a.")
         elif val == 0:
+            print("Discriminant : b^2 - 4*a*c = " + str(val))
             print("Discriminant égal à 0.")
-            print("Une solution, x = " + str(-self.b / 2 * self.a))
+            print("Une solution double, -b/2a : x = " + str(-self.b / 2 * self.a))
         elif val > 0:
+            print("Discriminant : \u0394 = b^2 - 4*a*c = " + str(val))
             print("Discriminant strictement positif.")
-            print("Deux solutions, x1 = " + str((-self.b - (val ** 0.5))/ (2 * self.a)) + ", x2 = " + str((-self.b + (val ** 0.5))/ (2 * self.a)))
+            print("Deux solutions, x1 = (-b - " + u"\u221a\u0394) / 2*a, x2 = (-b + " + u"\u221a\u0394) / 2*a.")
+            print("x1 = " + str((-self.b - (val ** 0.5))/ (2 * self.a)) + ", x2 = " + str((-self.b + (val ** 0.5))/ (2 * self.a)))
 
 poly = Polynome()
 
@@ -84,11 +90,13 @@ poly = Polynome()
 def checkForMonome(mo):
     if mo.isdigit() == True:
         return
-    else:
+    elif len(mo) > 0:
+        if mo[0] == "-":
+            return
         if mo[0] == 'x':
             mo = "1*" + mo
         if mo.count('^') > 1 or mo.count('*') > 1 or mo.count('^') == 0 or mo.count('*') == 0 :
-            end("Erreur parsing.")
+            end("Erreur parsing ici.")
 
 def getSignAndValue(val):
     string = ""
@@ -99,20 +107,20 @@ def getSignAndValue(val):
     return string
 
 def getStringPower(power):
-    if power == 0 and poly.a != 0 and poly.b != 0 and poly.c != 0:
+    if power == 0 or poly.a != 0 and poly.b != 0 and poly.c != 0:
         return " "
     if power >= 1 or (poly.a == 0 and poly.b == 0):
         return "*X^" + str(power) + " "
 
 def createMonome(tab, right):
     monome = None
-    print(tab)
+    if len(tab) == 1 and tab[0] == "":
+        return
     for v in tab : checkForMonome(v)
     val = -int(tab[0].replace("=", "")) if right else int(tab[0].replace("=", ""))
     if len(tab) == 1:
         monome = Monome(val, 0)
     else :
-        print(tab[1])
         if len(tab[1]) < 3:
             end("Erreur parsing.")
         pow = int(tab[1].split("^")[1])
@@ -137,6 +145,8 @@ def getPower(str, right):
 def checkInput(string):
     if string.isdigit():
         end("Aucune équation a résoudre")
+    if string.count('=') > 1:
+        end("Erreur parsing.")
     for c in string:
         if c.isdigit() == False and (c != 'x' and c != '+' and c != '-' and c != '*' and c != '=' and c != '^' and c != 'X' and c != ' '):
             end("Erreur parsing.")
@@ -145,14 +155,12 @@ def getInput():
     right = 0
     try:
         val = input("Entrez une équation: ")
-    except EOFError as error:
+    except EOFError:
         end("Erreur input.")
-    except KeyboardInterrupt as error:
+    except KeyboardInterrupt:
         end("Erreur input.")
-    except IOError as error:
+    except IOError:
         end("Erreur input.")
-    except:
-        end("Erreur.")
     checkInput(val)
     expr = val.lower().replace("-", "+-").split("+")
     for ex in expr:
@@ -165,12 +173,8 @@ def getInput():
         else :
             getPower(ex, right)
 
-try:
-    getInput()
-except EOFError:
-    end("Erreur input")
-except KeyboardInterrupt as error:
-    end("Erreur input.")
+
+getInput()
 poly.sortMonomes()
 if poly.putPolyDegree() > 2 :
     end("Ne gère pas les puissances supérieures à 2.")
@@ -180,9 +184,6 @@ for mo in poly.monomes:
         poly.string += getStringPower(mo.power)
 
 poly.string += "= 0."
-print("Forme réduite : " + poly.string)
+
 poly.solve()
-try:
-    poly.draw()
-except :
-    end("Erreur draw")
+# poly.draw()
