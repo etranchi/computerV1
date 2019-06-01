@@ -161,7 +161,10 @@ def getInput():
         end("Erreur input.")
     except IOError:
         end("Erreur input.")
+    if len(val) == 0:
+        end("No input.")
     checkInput(val)
+
     expr = val.lower().replace("-", "+-").split("+")
     for ex in expr:
         if ex.find("=") > 0:
