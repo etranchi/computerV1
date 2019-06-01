@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/Users/etranchi/.brew/bin/python3
 # coding: utf-8
 
 import numpy as np
