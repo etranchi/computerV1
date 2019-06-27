@@ -1,4 +1,4 @@
-#!/Users/etranchi/.brew/bin/python3
+#!/usr/local/bin/python3
 # coding: utf-8
 
 import numpy as np
@@ -68,19 +68,24 @@ class Polynome:
     def putSolution(self, val):
         print("Forme réduite : " + poly.string)
         if self.power == 1:
+            print("Une solution de la forme x = -c/b")
+            print("Avec b = " + str(self.b) + ", c = " + str(self.c))
             print("Une solution, x = " + str(-self.c / self.b))
         elif val < 0:
             print("Discriminant : \u0394 = b^2 - 4*a*c = " + str(val))
+            print("Avec a = " + str(self.a) + ", b = " + str(self.b) + ", c = " + str(self.c))
             print("Discriminant strictement négatif.")
-            print("Deux solutions imaginaire, x1 = (-b - " + u"\u221a\u0394*i^2) / 2*a, x2 = (-b + " + u"\u221a\u0394*i^2) / 2*a.")
+            print("Deux solutions imaginaire, x1 = (-b - " + u"\u221a(\u0394*i^2)) / 2*a, x2 = (-b + " + u"\u221a(\u0394*i^2)) / 2*a.")
         elif val == 0:
             print("Discriminant : b^2 - 4*a*c = " + str(val))
+            print("Avec a = " + str(self.a) + ", b = " + str(self.b) + ", c = " + str(self.c))
             print("Discriminant égal à 0.")
             print("Une solution double, -b/2a : x = " + str(-self.b / 2 * self.a))
         elif val > 0:
             print("Discriminant : \u0394 = b^2 - 4*a*c = " + str(val))
+            print("Avec a = " + str(self.a) + ", b = " + str(self.b) + ", c = " + str(self.c))
             print("Discriminant strictement positif.")
-            print("Deux solutions, x1 = (-b - " + u"\u221a\u0394) / 2*a, x2 = (-b + " + u"\u221a\u0394) / 2*a.")
+            print("Deux solutions, x1 = (-b - " + u"\u221a(\u0394)) / 2*a, x2 = (-b + " + u"\u221a(\u0394)) / 2*a.")
             print("x1 = " + str((-self.b - (val ** 0.5))/ (2 * self.a)) + ", x2 = " + str((-self.b + (val ** 0.5))/ (2 * self.a)))
 
 poly = Polynome()
@@ -88,15 +93,15 @@ poly = Polynome()
 
 
 def checkForMonome(mo):
-    if mo.isdigit() == True:
+    if mo.replace('.','',1).isdigit() == True:
         return
     elif len(mo) > 0:
         if mo[0] == "-":
             return
         if mo[0] == 'x':
             mo = "1*" + mo
-        if mo.count('^') > 1 or mo.count('*') > 1 or mo.count('^') == 0 or mo.count('*') == 0 :
-            end("Erreur parsing ici.")
+        if mo.count('^') > 1 or mo.count('*') > 1 or mo.count('^') == 0 or mo.count('*') == 0:
+                end("Erreur parsing ici.")
 
 def getSignAndValue(val):
     string = ""
@@ -117,7 +122,10 @@ def createMonome(tab, right):
     if len(tab) == 1 and tab[0] == "":
         return
     for v in tab : checkForMonome(v)
-    val = -int(tab[0].replace("=", "")) if right else int(tab[0].replace("=", ""))
+    try:
+        val = -float(tab[0].replace("=", "")) if right else float(tab[0].replace("=", ""))
+    except :
+        end("Erreur parsing")
     if len(tab) == 1:
         monome = Monome(val, 0)
     else :
@@ -148,7 +156,7 @@ def checkInput(string):
     if string.count('=') > 1:
         end("Erreur parsing.")
     for c in string:
-        if c.isdigit() == False and (c != 'x' and c != '+' and c != '-' and c != '*' and c != '=' and c != '^' and c != 'X' and c != ' '):
+        if c.isdigit() == False and (c != '.' and c != 'x' and c != '+' and c != '-' and c != '*' and c != '=' and c != '^' and c != 'X' and c != ' '):
             end("Erreur parsing.")
 
 def getInput():
@@ -164,7 +172,6 @@ def getInput():
     if len(val) == 0:
         end("No input.")
     checkInput(val)
-
     expr = val.lower().replace("-", "+-").split("+")
     for ex in expr:
         if ex.find("=") > 0:
