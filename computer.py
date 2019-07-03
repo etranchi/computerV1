@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/Users/etranchi/.brew/Cellar/python/3.7.3/bin/python3
 # coding: utf-8
 
 import numpy as np
@@ -40,7 +40,10 @@ class Polynome:
         return
 
     def putPolyDegree(self):
+        while self.monomes[0].value == 0:
+            self.monomes.pop(0);
         self.power = self.monomes[0].power
+
         print("Polynome de degrée : " + str(self.monomes[0].power))
         return self.monomes[0].power
 
