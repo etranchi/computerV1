@@ -82,7 +82,7 @@ class Polynome:
             print("Discriminant : b^2 - 4*a*c = " + str(val))
             print("Avec a = " + str(self.a) + ", b = " + str(self.b) + ", c = " + str(self.c))
             print("Discriminant égal à 0.")
-            print("Une solution double, -b/2a : x = " + str(-self.b / 2 * self.a))
+            print("Une solution double, -b/2a : x = " + str(-self.b / (2 * self.a)))
         elif val > 0:
             print("Discriminant : \u0394 = b^2 - 4*a*c = " + str(val))
             print("Avec a = " + str(self.a) + ", b = " + str(self.b) + ", c = " + str(self.c))
