@@ -133,7 +133,10 @@ def createMonome(tab, right):
     else :
         if len(tab[1]) < 3:
             end("Erreur parsing.")
-        pow = int(tab[1].split("^")[1])
+        try:
+            pow = int(tab[1].split("^")[1])
+        except:
+            end("Erreur dans une des puissances.")
         monome = Monome(val,pow)
     ref = poly.findMonomeWithPowerOf(monome.power)
     if ref != None:
